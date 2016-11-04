@@ -16,7 +16,6 @@ use Lingua::GA::Gramadoir::Languages;
 
 
 my $parser = XML::LibXML->new();
-	$parser->validation(0);
 
 my %enc = (
 	af	=>	"iso-8859-1",
@@ -40,7 +39,11 @@ my %files = (
 );
 my %no_rule = (
 	ANAITHNID => 1,
+	ANKOTHVOS => 1,
+	UNKNOWN => 1,
 	NEAMHCHOIT => 1,
+	NAMMENOWGH => 1,
+	UNCOMMON => 1,
 );
 
 open (my $fh, "<:encoding(iso-8859-1)", 'gramadoir/engine/messages.txt');
@@ -52,9 +55,8 @@ while (my $line = <$fh>) {
         chomp $line;
         next unless $line =~ /^(\S+)\s+'(.*)'$/;
         my ($keys,$value) = ($1,$2);
-	#if ($po) {
-		$value =~ s!\\/\\1\\/!/[_1]/!;
-		$value =~ s!\\([/'])!$1!g;
+	$value =~ s!\\/\\1\\/!/[_1]/!;
+	$value =~ s!\\([/'])!$1!g;
 	while (my ($lang, $po) = each %po) {
 		eval {
 			$value = $po->maketext($value,'<suggestion>%s</suggestion>');
@@ -66,9 +68,6 @@ while (my $line = <$fh>) {
 			$errors{$lang}->{$key} = $value;
 		}
 	}
-	#} else {
-	#	$value =~ s!\\/\\1\\/!<suggestion>%s</suggestion>!;
-	#}
 }
 close ($fh);
 
